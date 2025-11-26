@@ -44,6 +44,12 @@ http://localhost:8000/docs
 
 ---
 
+## Note :
+
+For the SSE Part we are maintaing a in memory setup in the local development.
+
+---
+
 ## ✅ API Usage
 
 ### 1. Ingest Single Event
