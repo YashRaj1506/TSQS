@@ -1,0 +1,89 @@
+# -----------------------
+# Python
+# -----------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyd
+*.so
+*.egg
+*.egg-info/
+.eggs/
+build/
+dist/
+pip-wheel-metadata/
+*.sqlite3
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+ENV/
+
+# Poetry
+.poetry/
+poetry.lock
+
+# -----------------------
+# FastAPI / Pydantic
+# -----------------------
+*.log
+logs/
+*.pid
+
+# Static / media (if generated)
+static/
+media/
+
+# -----------------------
+# Environment files
+# -----------------------
+.env
+.env.*
+!env.example
+!.env.example
+
+# -----------------------
+# Docker
+# -----------------------
+docker-compose.override.yml
+docker-data/
+*.pid
+*.log
+
+# -----------------------
+# PostgreSQL
+# -----------------------
+pgdata/
+postgres-data/
+*.sql
+*.dump
+
+# -----------------------
+# Alembic (keep migration scripts)
+# -----------------------
+alembic/versions/*.pyc
+alembic/__pycache__/
+
+# -----------------------
+# IDE / Editor
+# -----------------------
+.vscode/
+.idea/
+*.iml
+
+# -----------------------
+# OS files
+# -----------------------
+.DS_Store
+Thumbs.db
+
+# -----------------------
+# Cache
+# -----------------------
+.cache/
+.mypy_cache/
+.pytest_cache/
+pytest.debug.log

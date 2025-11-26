@@ -1,0 +1,31 @@
+
+services:
+  db:
+    image: postgres:15
+    container_name: telemetry-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: telemetry
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+  
+  api:
+    build: .
+    container_name: telemetry-api
+    restart: always
+    depends_on: 
+      - db
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@db:5432/telemetry
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+
+volumes:
+  db_data:
+    
