@@ -2,13 +2,6 @@
 
 This project provides a FastAPI-based telemetry ingestion and query system with:
 
-✅ Event ingestion (single + batch)
-✅ Idempotency using `event_id`
-✅ Query recent events per device
-✅ Time-based aggregations (count, sum, avg, min, max)
-✅ Search by tag
-✅ Real-time alerts using Server-Sent Events (SSE)
-
 ---
 
 ## 🚀 Getting Started
@@ -190,10 +183,85 @@ data: {"device_id":"deviceA","metrics":{"temp":40},"time":"2025-01-15 11:01:00"}
 
 ---
 
-## ✅ Stop Services
-```
-docker-compose down
-```
+## How we will scale it in production for millions of users
+
+![System Architecture](max.png)
+
+## 🏗️ System Workflow Overview
+
+This system is designed to handle **high-volume metric ingestion**, **real-time alerting**, and **fast analytical queries** at scale.
+
+---
+
+### Metric Ingestion Flow
+
+1. A user/device sends metrics to the ingestion API (`POST /v1/events`)
+2. FastAPI **does NOT write to the database directly**
+3. Instead, FastAPI pushes the incoming metrics into a **Redis Stream**
+
+Redis Streams provide:
+
+- high throughput buffering
+- durability
+- ability to handle spikes and millions of writes
+
+---
+
+### Ingestion Workers
+
+Multiple ingestion worker processes continuously consume data from Redis Streams.
+
+Workers perform:
+
+- batch reading
+- batching logic
+- bulk inserts into **TimescaleDB**
+
+Benefits:
+
+- API stays fast and non-blocking
+- database load is reduced
+- throughput increases massively
+- scaling is easy: just add more workers
+
+---
+
+###  Alert Distribution (Redis Pub/Sub)
+
+- Workers keep an **in-memory cache of alert rules**
+- When a user sets an alert (e.g., `temp > 32`) via:
+
+POST /v1/alerts
+
+Fastapi publishes the alert rule to **Redis Pub/Sub**
+
+All workers are subscribed, so they:
+
+- instantly receive the alert rule
+- update their in-memory alert list
+- no DB query required
+
+As workers process incoming metrics:
+
+- they compare metric values with alert rules
+- if a metric exceeds a threshold:
+
+worker publishes an alert event to Redis Pub/Sub,
+
+fastapi has a sse endpoint, so when an alert comes
+
+FastAPI pushes it to connected clients in real-time via SSE
+
+--- 
+
+## For queries like:
+
+- tag search
+- aggregations
+- recent events
+
+FastAPI interacts **directly with TimescaleDB**, not Redis.
+
 
 ---
 
